@@ -3,106 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f7f5">
-  <meta name="description" content="Карта потребности ВкусВилл для подбора торговых точек и курьерских ролей агентами.">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://tile.openstreetmap.org data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta http-equiv="refresh" content="0; url=https://nik199494-star.github.io/vv-agent-map/">
+  <link rel="canonical" href="https://nik199494-star.github.io/vv-agent-map/">
   <title>ВВ Агент | Карта потребности</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./vendor/leaflet.css">
-  <link rel="stylesheet" href="./vendor/MarkerCluster.css">
-  <link rel="stylesheet" href="./styles.css">
-  <script defer src="./vendor/leaflet.js"></script>
-  <script defer src="./vendor/leaflet.markercluster.js"></script>
-  <script type="module" src="./app.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="./" aria-label="ВВ Агент, главная">
-      <span class="brand-mark" aria-hidden="true">ВВ</span>
-      <span>ВВ Агент</span>
-    </a>
-    <label class="global-search"><span data-icon="search"></span><input type="search" id="search" placeholder="Город, адрес или ID ТТ" aria-label="Поиск по городу, адресу или ID ТТ"></label>
-    <div class="data-actions">
-      <button class="button refresh" id="refresh" type="button" disabled><span data-icon="refresh"></span><span>Обновить</span></button>
-    </div>
-  </header>
-
-  <main class="main">
-    <section class="overview" aria-labelledby="page-title">
-      <div class="intro"><h1 id="page-title">Карта потребности</h1><p>Подбор торговой точки для кандидата</p></div>
-      <dl class="metrics">
-        <div class="metric"><span class="metric-icon" data-icon="pin"></span><div><dt>Подходящие ТТ</dt><dd id="count">—</dd></div></div>
-        <div class="metric"><span class="metric-icon warm" data-icon="users"></span><div><dt>Суммарный недобор</dt><dd id="total">—</dd></div></div>
-        <div class="metric metric-date"><span class="metric-icon" data-icon="calendar"></span><div><dt>Потребность на</dt><dd id="hrm-date">—</dd></div></div>
-      </dl>
-    </section>
-    <div class="notice" id="source-notice" role="status" hidden></div>
-
-    <div class="workspace" id="workspace">
-      <button class="filter-backdrop" type="button" id="filter-backdrop" aria-label="Закрыть фильтры" hidden></button>
-      <aside class="filter-panel panel" id="filter-panel" aria-label="Фильтры вакансий">
-        <div class="panel-head filters-head">
-          <h2><span data-icon="filter"></span>Фильтры</h2>
-          <button type="button" id="reset" class="text-button">Сбросить</button>
-          <button type="button" class="icon-button close-filters" id="close-filters" aria-label="Закрыть фильтры"><span data-icon="close"></span></button>
-        </div>
-        <form id="filters" class="filters" autocomplete="off">
-          <div class="field city-field">
-            <label for="city-search">Город</label>
-            <div class="city-input"><span data-icon="pin"></span><input id="city-search" type="text" role="combobox" aria-controls="city-options" aria-expanded="false" aria-autocomplete="list" placeholder="Все города"><span data-icon="chevron"></span></div>
-            <ul id="city-options" class="city-options" role="listbox" aria-label="Города" hidden></ul>
-          </div>
-          <fieldset>
-            <legend>Тип транспорта</legend>
-            <div id="transport" class="transport-grid"></div>
-          </fieldset>
-          <div class="field"><label for="priority">Приоритет</label><select id="priority"><option value="">Любой приоритет</option></select></div>
-          <div class="field"><label for="super-focus">Суперфокус</label><select id="super-focus"><option value="">Все роли</option><option value="yes">В суперфокусе</option><option value="no">Без суперфокуса</option></select></div>
-          <div class="field"><label for="need">Недобор от</label><div class="suffixed"><input type="number" id="need" min="1" step="1" placeholder="Любой"><span>чел.</span></div></div>
-          <div class="field"><label for="schedule">График</label><select id="schedule"><option value="">Любой график</option></select></div>
-          <div class="field"><label for="shift">Минимальная смена</label><div class="suffixed"><input id="shift" type="number" min="1" max="24" step="0.5" placeholder="Не длиннее"><span>ч.</span></div><small>Сколько часов кандидат может работать</small></div>
-          <div class="field"><label for="age">Возраст кандидата</label><div class="suffixed"><input type="number" id="age" min="14" max="99" step="1" placeholder="Введите возраст"><span>лет</span></div></div>
-          <fieldset><legend>Ориентир дохода, ₽/день</legend><div class="range"><input type="number" min="0" step="1" id="income-from" placeholder="От" aria-label="Доход от"><input type="number" min="0" step="1" id="income-to" placeholder="До" aria-label="Доход до"></div></fieldset>
-        </form>
-        <div class="filter-foot"><button class="button primary" type="button" id="apply-filters">Показать ТТ</button></div>
-      </aside>
-
-      <section class="map-panel panel" aria-labelledby="view-title">
-        <div class="panel-head view-head">
-          <div class="view-title"><h2 id="view-title">Торговые точки</h2><p id="map-count">Загрузка…</p></div>
-          <button class="button mobile-filter" id="open-filters" type="button" aria-label="Фильтры" aria-controls="filter-panel" aria-expanded="false"><span data-icon="filter"></span><span class="mobile-filter-label">Фильтры</span><span id="filter-count" hidden></span></button>
-          <div class="view-switch" role="group" aria-label="Вид результатов">
-            <button id="map-view" type="button" aria-pressed="true" aria-label="Карта" title="Карта"><span data-icon="map"></span><span class="view-label">Карта</span></button>
-            <button id="list-view" type="button" aria-pressed="false" aria-label="Список" title="Список"><span data-icon="list"></span><span class="view-label">Список</span></button>
-          </div>
-        </div>
-        <div class="map-frame" id="map-frame">
-          <div id="map" aria-label="Карта торговых точек ВкусВилл"></div>
-          <button type="button" class="icon-button recenter" id="recenter" aria-label="Показать подходящие ТТ на карте" title="Показать подходящие ТТ на карте"><span data-icon="target"></span></button>
-          <div class="map-message" id="map-message" hidden></div>
-          <div class="map-legend" id="legend" hidden><strong>Приоритет</strong><div id="legend-items"></div></div>
-        </div>
-      </section>
-
-      <section class="result-panel panel" aria-labelledby="results-title">
-        <div class="panel-head results-head"><div><h2 id="results-title">Подходящие ТТ</h2><p id="result-meta">Загрузка…</p></div><span class="result-heading-icon" data-icon="list"></span></div>
-        <div id="result-body" class="result-scroll" aria-busy="true"><div class="results" id="results"></div><button type="button" id="more" class="button more" hidden>Показать ещё</button></div>
-      </section>
-    </div>
-
-  </main>
-
-  <dialog class="detail" id="detail" aria-labelledby="detail-title">
-    <button type="button" class="icon-button close-detail" id="close-detail" aria-label="Закрыть карточку"><span data-icon="close"></span></button>
-    <div id="detail-content"></div>
-  </dialog>
-  <dialog class="detail manual-copy" id="manual-copy" aria-labelledby="copy-title">
-    <h2 id="copy-title">Данные ТТ для кандидата</h2>
-    <textarea id="copy-value" readonly aria-label="Данные для копирования"></textarea>
-    <form method="dialog"><button type="submit" class="button">Закрыть</button></form>
-  </dialog>
-  <div class="toast" id="toast" role="status" hidden></div>
-  <noscript><p class="notice">Включите JavaScript, чтобы пользоваться картой и фильтрами.</p></noscript>
+  <main><h1>Карта потребности переехала</h1><p><a href="https://nik199494-star.github.io/vv-agent-map/">Открыть интерактивную карту потребности</a></p></main>
 </body>
 </html>
